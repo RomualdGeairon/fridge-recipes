@@ -26,7 +26,15 @@ const User = ({ match: { params: { id } } }) => {
 
   return (
     <div>
-      {`Bienvenue ${user.name}`}
+      <div>
+        {`Bienvenue ${user.name}`}
+        <button
+          type="button"
+          onClick={() => history.push('/')}
+        >
+          Déconnexion
+        </button>
+      </div>
       <IngredientList userId={user.id} />
     </div>
   );

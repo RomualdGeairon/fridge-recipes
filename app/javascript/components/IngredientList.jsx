@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { DELETE, GET, POST } from '../utils/httpMethods';
+import RecipeList from './RecipeList';
+import handleEnter from '../utils/handleEnter';
 
 const IngredientList = ({ userId }) => {
   const [ingredients, setIngredients] = useState([]);
   const [name, setName] = useState('');
+  const childRef = useRef();
 
   const fetchIngredients = async () => {
     const response = await GET(`/api/ingredient/index/${userId}`);
@@ -21,6 +24,7 @@ const IngredientList = ({ userId }) => {
     if (response) {
       setIngredients([...ingredients, response]);
       setName('');
+      childRef.current.reload();
     }
   };
 
@@ -28,6 +32,7 @@ const IngredientList = ({ userId }) => {
     const response = await DELETE(`/api/ingredient/destroy/${id}`);
     if (response) {
       setIngredients(ingredients.filter((ingredient) => ingredient.id !== response.id));
+      childRef.current.reload();
     }
   };
 
@@ -36,7 +41,7 @@ const IngredientList = ({ userId }) => {
   }, []);
 
   return (
-    <>
+    <div className="mt-1">
       <div>Ma liste :</div>
       <div>
         {ingredients.map((ingredient) => (
@@ -47,10 +52,16 @@ const IngredientList = ({ userId }) => {
         ))}
       </div>
       <div>
-        <input type="text" onChange={(e) => setName(e.target.value)} value={name} />
+        <input
+          type="text"
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+          onKeyDown={handleEnter(addIngredient)}
+        />
         <button type="button" onClick={addIngredient}>Ajouter</button>
       </div>
-    </>
+      <RecipeList userId={userId} ref={childRef} />
+    </div>
   );
 };
 

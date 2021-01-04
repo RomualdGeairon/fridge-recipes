@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { POST } from '../utils/httpMethods';
+import handleEnter from '../utils/handleEnter';
 
 const Home = () => {
   const history = useHistory();
@@ -27,7 +28,7 @@ const Home = () => {
       <hr />
       <div className="d-flex flex-column">
         Entrez votre nom d'utilisateur:
-        <input onChange={handleUserName} />
+        <input onChange={handleUserName} onKeyDown={handleEnter(handleLogin)} />
         <button type="button" onClick={handleLogin}>S'enregistrer</button>
       </div>
     </>

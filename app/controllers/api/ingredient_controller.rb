@@ -1,6 +1,5 @@
 class Api::IngredientController < ApplicationController
   def index
-    puts(Ingredient.where(user_id: params[:id]))
     render json: Ingredient.where(user_id: params[:id])
   end
 
