@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class TestController < ApplicationController
   @@data = File.read('storage/recipes.json')
   def index
