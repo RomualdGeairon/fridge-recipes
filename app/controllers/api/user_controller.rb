@@ -8,7 +8,7 @@ class Api::UserController < ApplicationController
       if new_user
         render json: new_user
       else
-        render json: user.errors
+        render json: new_user.errors
       end
     end
   end

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { POST } from '../utils/httpMethods';
 
 const Home = () => {
   const history = useHistory();
@@ -9,23 +10,9 @@ const Home = () => {
     setUserName(event.target.value);
   };
 
-  const handleLogin = () => {
-    const token = document.querySelector('meta[name="csrf-token"]').content;
-    fetch('/api/user/create', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-Token': token,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name: userName }),
-    }).then(async (response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Network response was not ok.');
-    })
-      .then((response) => history.push(`/user/${response.id}`))
-      .catch((error) => console.error(error.message));
+  const handleLogin = async () => {
+    const user = await POST('/api/user/create', { name: userName });
+    history.push(`/user/${user.id}`);
   };
 
   return (
