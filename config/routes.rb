@@ -4,9 +4,9 @@ Rails.application.routes.draw do
     get 'recipe/show/:id', to: 'recipe#show'
   end
   namespace :api do
-    get 'ingredient/index/:id', to: 'ingredient#index'
-    post 'ingredient/create'
-    delete 'ingredient/destroy/:id', to: 'ingredient#destroy'
+    get 'user-ingredient/index/:id', to: 'user_ingredient#index'
+    post 'user-ingredient/create'
+    delete 'user-ingredient/destroy/:id', to: 'user_ingredient#destroy'
   end
   namespace :api do
     post 'user/create'

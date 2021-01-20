@@ -6,6 +6,7 @@ import { GET } from '../utils/httpMethods';
 
 const RecipeList = forwardRef(({ userId }, ref) => {
   const [recipeList, setRecipeList] = useState();
+  const [totalResults, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const sortRecipes = (a, b) => {
@@ -17,8 +18,9 @@ const RecipeList = forwardRef(({ userId }, ref) => {
 
   const fetchAvailableRecipes = async () => {
     setLoading(true);
-    const recipes = await GET(`/api/recipe/index/${userId}`);
-    if (recipes) {
+    const { recipes, total } = await GET(`/api/recipe/index/${userId}`);
+    if (total > 0) {
+      setTotal(total);
       setRecipeList(recipes.sort(sortRecipes));
     }
     setLoading(false);
@@ -50,8 +52,10 @@ const RecipeList = forwardRef(({ userId }, ref) => {
     );
   }
 
+  console.log(totalResults);
+
   return (
-    <table className="table mt-1">
+    <table className="table mt-1" data-pagination="true">
       <thead>
         <tr>
           <th scope="col">Nom</th>
@@ -67,7 +71,7 @@ const RecipeList = forwardRef(({ userId }, ref) => {
           <tr key={`recipe-${id}`}>
             <td>{recipe.name}</td>
             <td>{recipe.total_time}</td>
-            <td>{recipe.ingredients.join(', ')}</td>
+            <td>{recipe.ingredients.map((ingredient) => ingredient.name).join(', ')}</td>
             <td>{recipe.rate}</td>
             <td>{recipe.author}</td>
           </tr>

@@ -10,17 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_02_223109) do
+ActiveRecord::Schema.define(version: 2021_01_13_110139) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "ingredients", force: :cascade do |t|
     t.string "name", null: false
+    t.integer "position"
+    t.bigint "recipe_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["recipe_id"], name: "index_ingredients_on_recipe_id"
+  end
+
+  create_table "recipes", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "rate"
+    t.string "author_tip"
+    t.string "prep_time"
+    t.string "author"
+    t.string "difficulty"
+    t.string "people_quantity"
+    t.string "cook_time"
+    t.string "total_time"
+    t.string "image"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "user_ingredients", force: :cascade do |t|
+    t.string "name", null: false
     t.bigint "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_ingredients_on_user_id"
+    t.index ["user_id"], name: "index_user_ingredients_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -30,5 +54,6 @@ ActiveRecord::Schema.define(version: 2021_01_02_223109) do
     t.index ["name"], name: "index_users_on_name", unique: true
   end
 
-  add_foreign_key "ingredients", "users"
+  add_foreign_key "ingredients", "recipes"
+  add_foreign_key "user_ingredients", "users"
 end

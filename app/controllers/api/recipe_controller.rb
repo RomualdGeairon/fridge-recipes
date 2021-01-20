@@ -1,32 +1,38 @@
 require 'json'
 
 class Api::RecipeController < ApplicationController
-  @file = File.read('storage/recipes.json')
-  @@data = JSON.parse(@file)
-
   def index
-    ingredients = Ingredient.where(user_id: params[:user_id])
-    formatted_ingredients = ingredients.as_json.map { |ingredient| ingredient['name'].downcase }
+    offset = 0 # TODO, get pagination from request
+    limit = 20
+    ingredients = UserIngredient.where(user_id: params[:user_id])
+    formatted_ingredients = ingredients.as_json.map { |ingredient| ingredient['name'].downcase.gsub("'", "''") }
+    where_clause = formatted_ingredients.map { |ingredient| "ing.name like '% #{ingredient} %'" }.join(' or ')
 
-    matching_recipes = []
+    # custom sql query WIP
+    sql = "select *
+    from recipes as r
+    inner join (
+      select ing.recipe_id, SUM(ing.position) as score, count(1) as matching_ingredients
+      from ingredients ing
+      where #{where_clause}
+      group by ing.recipe_id
+    ) i
+    on i.recipe_id  = r.id
+    group by r.id, i.recipe_id, i.matching_ingredients, i.score
+    order by matching_ingredients desc
+    limit #{limit}
+    offset #{offset}"
+    recipes = ActiveRecord::Base.connection.execute(sql)
 
-    @@data.each do |recipe, id|
-      matching_ingredients = []
-      # for each recipe ingredients, check if the user owns some
-      formatted_ingredients.each do |ingredient|
-        matching_ingredients << ingredient if recipe['ingredients'].any? { |i| i.downcase.match(/^(.*?(\b#{ingredient}\b))$/) }
-      end
+    recipes_ids = recipes.map { |recipe| recipe['id'] }
+    ingredients = Ingredient.where('recipe_id IN (?)', recipes_ids)
 
-      # skip if no match
-      matching_ingredients.empty? && next
-
-      # add recipe to list
-      recipe[:matching_ingredients] = matching_ingredients
-      recipe[:id] = id
-      matching_recipes << recipe
+    recipes = recipes.to_a
+    recipes.each do |recipe|
+      recipe['ingredients'] = ingredients.select { |ingredient| ingredient['recipe_id'] == recipe['id'] }
     end
 
-    render json: matching_recipes
+    render json: { recipes: recipes, total: Recipe.count }
   end
 
   def show

@@ -6,5 +6,6 @@
 	],
 	"settings": {
 		"ruby.rubocop.executePath": "",
+		"editor.tabSize": 2,
 	}
 }

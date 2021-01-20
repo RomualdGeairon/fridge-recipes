@@ -10,14 +10,14 @@ const IngredientList = ({ userId }) => {
   const childRef = useRef();
 
   const fetchIngredients = async () => {
-    const response = await GET(`/api/ingredient/index/${userId}`);
+    const response = await GET(`/api/user-ingredient/index/${userId}`);
     if (response) {
       setIngredients(response);
     }
   };
 
   const addIngredient = async () => {
-    const response = await POST('/api/ingredient/create', {
+    const response = await POST('/api/user-ingredient/create', {
       user_id: userId,
       name,
     });
@@ -29,7 +29,7 @@ const IngredientList = ({ userId }) => {
   };
 
   const deleteIngredient = async (id) => {
-    const response = await DELETE(`/api/ingredient/destroy/${id}`);
+    const response = await DELETE(`/api/user-ingredient/destroy/${id}`);
     if (response) {
       setIngredients(ingredients.filter((ingredient) => ingredient.id !== response.id));
       childRef.current.reload();

@@ -1,10 +1,10 @@
-class Api::IngredientController < ApplicationController
+class Api::UserIngredientController < ApplicationController
   def index
-    render json: Ingredient.where(user_id: params[:id])
+    render json: UserIngredient.where(user_id: params[:id])
   end
 
   def create
-    new_ingredient = Ingredient.create!(
+    new_ingredient = UserIngredient.create!(
       name: params[:name],
       user_id: params[:user_id]
     )
@@ -16,7 +16,7 @@ class Api::IngredientController < ApplicationController
   end
 
   def destroy
-    ingredient = Ingredient.find(params[:id])
+    ingredient = UserIngredient.find(params[:id])
     if ingredient
       ingredient.destroy
       render json: ingredient
