@@ -2,23 +2,23 @@ require 'json'
 
 class Api::RecipeController < ApplicationController
   def index
-    offset = 0 # TODO, get pagination from request
-    limit = 20
-    ingredients = UserIngredient.where(user_id: params[:user_id])
-    formatted_ingredients = ingredients.as_json.map { |ingredient| ingredient['name'].downcase.gsub("'", "''") }
-    where_clause = formatted_ingredients.map { |ingredient| "ing.name like '% #{ingredient} %'" }.join(' or ')
+    offset = params[:offset]
+    limit = params[:limit]
+    user_ingredients = UserIngredient.where(user_id: params[:user_id])
+    formatted_ingredients = user_ingredients.as_json.map { |ingredient| ingredient['name'].downcase }
+    where_clause = formatted_ingredients.map { |ingredient| "ing.name like '% #{ingredient.gsub("'", "''")} %'" }.join(' or ')
 
     # custom sql query WIP
-    sql = "select *
+    sql = "select r.*, i.matching_ingredients
     from recipes as r
     inner join (
-      select ing.recipe_id, SUM(ing.position) as score, count(1) as matching_ingredients
+      select ing.recipe_id, count(1) as matching_ingredients
       from ingredients ing
       where #{where_clause}
       group by ing.recipe_id
     ) i
     on i.recipe_id  = r.id
-    group by r.id, i.recipe_id, i.matching_ingredients, i.score
+    group by r.id, i.recipe_id, i.matching_ingredients
     order by matching_ingredients desc
     limit #{limit}
     offset #{offset}"
@@ -36,6 +36,8 @@ class Api::RecipeController < ApplicationController
   end
 
   def show
-    render json: data[params.id]
+    recipe = Recipe.find(params[:id]).as_json
+    recipe['ingredients'] = Ingredient.where(recipe_id: params[:id])
+    render json: recipe
   end
 end

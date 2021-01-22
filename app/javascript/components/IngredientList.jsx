@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { DELETE, GET, POST } from '../utils/httpMethods';
-import RecipeList from './RecipeList';
 import handleEnter from '../utils/handleEnter';
 
 const IngredientList = ({ userId }) => {
@@ -60,7 +60,7 @@ const IngredientList = ({ userId }) => {
         />
         <button type="button" onClick={addIngredient}>Ajouter</button>
       </div>
-      <RecipeList userId={userId} ref={childRef} />
+      <Link to="/recipes">Voir les recettes disponibles</Link>
     </div>
   );
 };

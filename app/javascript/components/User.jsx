@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { GET } from '../utils/httpMethods';
 import IngredientList from './IngredientList';
+import { useAuthentication } from '../hooks/useAuthentication';
 
 const User = ({ match: { params: { id } } }) => {
   const history = useHistory();
-  const [user, setUser] = useState();
+  const { user, setUser } = useAuthentication();
+
   useEffect(async () => {
     if (!id) {
       history.push('/');
